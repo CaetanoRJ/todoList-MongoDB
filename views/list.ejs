@@ -1,0 +1,28 @@
+<%-include("header") -%>
+<!-- traz o arquivo header.ejs para essa linha -->
+
+<div class="box" id="heading">
+    <h1><%= kindOfDay %> </h1>
+</div>
+
+<div class="box">
+    <%   for (let i = 0; i < listItems.length; i++) { %>
+    <!-- abrir fechar essas tags para cada linha de javascript -->
+    <form action="/delete" method="post">
+        <div class="item">
+            <input type="checkbox" name="checkBoxDeleted" value="<%=listItems[i]._id%>" onchange="this.form.submit()">
+            <p> <%= listItems[i].name %> </p>
+            <input type="hidden" value="<%= kindOfDay %>" name="listName">
+
+        </div>
+    </form>
+    <% } %>
+
+    <form action="/" method="post" class="item">
+        <input type="text" name="newItem" placeholder="New item" autocomplete="off">
+        <button type="submit" name="typeOfList" value=<%=kindOfDay%>>+</button>
+    </form>
+</div>
+
+
+<%-include("footer") -%>
