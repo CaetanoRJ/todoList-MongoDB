@@ -8,7 +8,8 @@ let app = express();
 
 // *******************  MONGOOOSE ****************
 mongoose.connect(
-  "mongodb+srv://admin-caetano:johnzin1@pedrodb-qh4xd.mongodb.net/todolistDB", {
+  "mongodb+srv://admin-caetano:johnzin1@pedrodb-qh4xd.mongodb.net/todolistDB",
+  {
     useNewUrlParser: true,
     useUnifiedTopology: true
   }
@@ -63,16 +64,16 @@ app.use(
 
 app.use(express.static("public")); // faz o express ver a pasta public
 
-app.get("/", function (req, res) {
+app.get("/", function(req, res) {
   let day = date.getDate(); //importa do modulo date.js a funcao getDate
 
-  ItemsModel.find({}, function (err, foundItems) {
+  ItemsModel.find({}, function(err, foundItems) {
     if (err) {
       console.log(err);
     } else {
       if (foundItems.length === 0) {
         //verifica se há algum item encontrado na pesquisa
-        ItemsModel.insertMany(defaultItems, function (err) {
+        ItemsModel.insertMany(defaultItems, function(err) {
           //defaultItem foi criado na parte do moongose(3 itens explicando o site), adiciona os 3 items no banco de dados caso esteja vazio
 
           if (err) {
@@ -102,16 +103,17 @@ app.get("/", function (req, res) {
 
 /************ Get de ROUTE PARAMETERS *****************/
 
-app.get("/:customListName", function (req, res) {
+app.get("/:customListName", function(req, res) {
   /* console.log(req.params); */
   /* (exibe um objeto customlistname: "videos") */
   /* console.log(req.params.customListName); */
   const routeParameters = _.capitalize(req.params.customListName);
 
-  listForRouters.findOne({
+  listForRouters.findOne(
+    {
       name: routeParameters
     },
-    function (err, foundList) {
+    function(err, foundList) {
       if (!err) {
         if (!foundList) {
           //não encontrou (cria uma nova lista)
@@ -137,7 +139,7 @@ app.get("/:customListName", function (req, res) {
 
 /************ FIM Get de ROUTE PARAMETERS *****************/
 
-app.post("/", function (req, res) {
+app.post("/", function(req, res) {
   let itemAdicionadoFront = req.body.newItem; //recebe o valor do item digitado no formulario
   let listName = req.body.typeOfList;
   let todayy = date.getDay(); //importa do modulo date.js a funcao getDate
@@ -150,10 +152,11 @@ app.post("/", function (req, res) {
     itemDigitado.save();
     res.redirect("/");
   } else {
-    listForRouters.findOne({
+    listForRouters.findOne(
+      {
         name: listName
       },
-      function (err, foundList) {
+      function(err, foundList) {
         foundList.items.push(itemDigitado); //vai no item encontrado que é um objeto {name:xxxxx, items:[]} e insere nos items
         foundList.save();
         res.redirect("/" + listName);
@@ -162,7 +165,7 @@ app.post("/", function (req, res) {
   }
 });
 
-app.post("/delete", function (req, res) {
+app.post("/delete", function(req, res) {
   const checkedItemId = req.body.checkBoxDeleted;
   const listName = req.body.listName;
   let today = date.getDate();
@@ -170,7 +173,7 @@ app.post("/delete", function (req, res) {
   if (listName === today) {
     /*  ItemsModel.deleteOne({ _id: checkedItemId }, function(err, foundItems) { */
     //ou model.findByIdAndRemove(id, options, callback) feito abaixo
-    ItemsModel.findByIdAndRemove(checkedItemId, function (err, foundItems) {
+    ItemsModel.findByIdAndRemove(checkedItemId, function(err, foundItems) {
       if (err) {
         console.log(err);
       } else {
@@ -179,16 +182,18 @@ app.post("/delete", function (req, res) {
       res.redirect("/");
     });
   } else {
-    listForRouters.findOneAndUpdate({
+    listForRouters.findOneAndUpdate(
+      {
         name: listName
-      }, {
+      },
+      {
         $pull: {
           items: {
             _id: checkedItemId
           }
         }
       }, //funcao pull do mongo remove o do array o que foi encontrado
-      function (err, foundList) {
+      function(err, foundList) {
         if (!err) {
           res.redirect("/" + listName);
         }
@@ -202,12 +207,11 @@ if (port == null || port == "") {
   port = 3000;
 }
 
-app.listen(port, function () {
+app.listen(port, function() {
   console.log("server is running on port 3000.");
 });
-
 
 /* ou 
 App.listen(process.env.PORT || 3000, function () { 
   console.log("server is running on port 3000."); 
-});  */
+}); *** */
